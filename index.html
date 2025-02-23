@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimal Merge Pattern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            overflow-x: hidden;
+            
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Navigation Bar */
+      
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);   
+            color:white;
+            padding: 10px 10px;
+            display: flex;/* Use flexbox to arrange items horizontally */
+            justify-content: space-between;/* Space out the logo and links */
+            align-items: center; /* Vertically center the items in the navbar */
+            z-index: 1000;
+        }
+        
+
+        .navbar a {
+            text-decoration: none; /* Removes underline from links */
+            color: white;/* Default text color */
+            font-size: 1.2em;
+            margin: 0 15px;/* Spacing between links */
+            transition: color 0.3s;/* Smooth color transition for hover effect */
+        }
+
+        .navbar a:hover {
+            color: #ff4757; /* Accent color */
+        }
+
+        .navbar .logo {
+            font-weight: 600;
+            font-size: 1.8em;
+        }
+
+        /* Hero Section */
+        #hero {
+            display: flex;/* Use Flexbox to arrange child elements (h1, p, button) in a row */
+            justify-content: center; /* Center the child elements horizontally */
+            align-items: center; /* Center the child elements vertically */
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-align: center;
+            padding: 0 20px;/* Add horizontal padding to avoid text from touching the edges */
+        }
+
+        #hero h1 {
+            font-size: 3.5em;
+            font-weight: 600;
+            animation: fadeIn 1s ease-in-out;/* Apply the fade-in animation over 1 second */
+        }
+
+        #hero p {
+            font-size: 1.6em;
+            margin-bottom: 1.5em;/* Add some space below the paragraph */
+            max-width: 600px;
+            animation: fadeIn 2s ease-in-out;/* Apply the fade-in animation over 2 seconds */
+        }
+        
+
+        #hero button {
+            background: linear-gradient(90deg, #ff6b6b, #ff4757);
+            color: white;
+            border: none;/* Remove any default border around the button */
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.3em;
+            cursor: pointer;
+            animation: fadeIn 2.5s ease-in-out;/* Apply a fade-in animation over 2.5 seconds */
+            transition: transform 0.3s, background 0.3s;/* Smooth transition for scaling and background color change */
+        }
+        
+
+        #hero button:hover {
+            transform: scale(1.1);/* Enlarge the button slightly when hovered */
+        }
+
+        /* Theory Section */
+        #theory {
+            background-color: #eaf2fb;
+            padding: 50px 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 30px 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #theory h2 {
+            font-size: 2.8em;
+            margin-bottom: 1em;
+            color: #3a3a3a;
+        }
+
+        #theory p {
+            font-size: 1.4em;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+            color: #555;
+        }
+
+        .visualization-button {
+            display: inline-block;
+            background-color: #667eea;
+            color: white;
+            font-size: 1.2em;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            text-align: center;
+            margin-top: 20px;/* Adds space above the button */
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+
+/* Hover Effect for Visualization Button */
+        .visualization-button:hover {
+            background-color: #764ba2;
+            transform: scale(1.1);/* Enlarges the button slightly (10%) when hovered */
+        }
+
+
+/* Active Effect for Visualization Button */
+        .visualization-button:active {
+            transform: scale(1);/* Resets the scale when the button is clicked, giving a "pressed" effect */
+        }
+
+       /* Footer Styling */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;/* Adds vertical padding for spacing inside the footer */
+            text-align: center;/* Centers all content in the footer */
+        }
+
+        /* Footer Heading Styling */
+        footer h3 {
+            margin: 0;/* Removes default margin around the footer heading */
+        }
+
+        /* Social Icons Styling */
+        footer .social-icons a {
+            color: white;
+            font-size: 1.5em;
+            margin: 0 10px;/* Adds horizontal space between the icons */
+            transition: color 0.3s;/* Smooth transition for color change when hovered */
+        }
+        
+        /* Hover Effect for Social Icons */
+        footer .social-icons a:hover {
+            color: #ff4757;
+        }
+
+            </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <div class="logo">Optimal Merge</div>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="theory.html">Theory</a>
+            <a href="visualization.html">Visualization</a>
+            <a href="code.html">Code</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div>
+            <h1>Optimal Merge Pattern Visualizer</h1>
+            <p>Learn and visualize how the Optimal Merge Pattern algorithm works, with step-by-step simulation and detailed explanation.</p>
+            <button onclick="document.getElementById('theory').scrollIntoView()">Get Started</button>
+        </div>
+    </section>
+
+    <!-- Theory Section -->
+    <section id="theory">
+        <h2>What is the Optimal Merge Pattern?</h2>
+        <p>The Optimal Merge Pattern algorithm is used to merge files efficiently. The goal is to minimize the total cost, which is the Weighted External Path Length (WEPL). The algorithm uses a greedy approach to merge the smallest files first, ensuring the optimal solution at each step.</p>
+        <a href="visualization.html" class="visualization-button">Click here to see visualization</a>
+    </section>
+
+   <!-- Footer Section -->
+    <footer>
+        <h3>&copy; 2024 Optimal Merge Pattern. All Rights Reserved.</h3>
+        <div class="social-icons">
+            <a href="https://www.facebook.com"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </footer>
+
+
+</body>
+</html>
