@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimal Merge Pattern Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome for icons -->
+    <style>
+        /* Navbar Styling */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2); /* Consistent with homepage colors */
+            color: white;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #ff4757;
+        }
+
+        .navbar .logo {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        /* Body Styling */  
+        body, h1 {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            font-size: 16px;
+            margin: 0;
+            /*padding-top: 70px;  Added padding to avoid navbar overlap */
+        }
+
+        /* Section Styling */
+        #simulation {
+            padding: 80px;
+            text-align: center;
+        }
+
+        #visualization {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: auto;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            height: 800px; /* Increased container height */
+            width: 100%;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Tooltip Styling */
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color:  #764ba2;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        footer h3 {
+            margin: 0;
+        }
+
+        footer .social-icons a {
+            color: white;
+            font-size: 1.5em;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        footer .social-icons a:hover {
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar Section -->
+<div class="navbar">
+    <div class="logo">Optimal Merge</div>
+    <div>
+        <a href="index.html">Home</a>
+        <a href="theory.html">Theory</a>
+        <a href="visualization.html">Visualization</a>
+        <a href="code.html">Code</a>
+    </div>
+</div>
+
+<section id="simulation">
+    <h1>Optimal Merge Pattern Visualization</h1>
+    <p>Enter file sizes (comma-separated):</p>
+    <input type="text" id="fileSizesInput" placeholder="e.g., 5, 10, 15, 20" />
+    <button onclick="simulateMerge()">Simulate</button>
+    <div id="visualization"></div>
+
+    <!-- WEPL Buttons -->
+    <button onclick="toggleWEPLMethod(1)">Calculate WEPL (Depth-Based Method)</button>
+    <button onclick="toggleWEPLMethod(2)">Calculate WEPL (Iterative Merge Cost Method)</button>
+
+    <div id="wepl-result"></div>
+    <div id="wepl-description"></div>
+</section>
+
+<script>
+    // Create a tooltip for displaying node information
+    const tooltip = d3.select("body")
+        .append("div")
+        .attr("class", "tooltip");
+
+    // A global variable to store the root node of the generated tree
+    let rootNode = null;
+
+     // Function to simulate the optimal merge pattern
+    function simulateMerge() {
+         // Read and parse the input file sizes
+        const input = document.getElementById("fileSizesInput").value;
+        const fileSizes = input.split(",").map(Number).filter(n => !isNaN(n));
+        const container = document.getElementById("visualization");
+        container.innerHTML = "";// Clear previous visualization   
+
+        // Ensure there are at least two file sizes
+        if(fileSizes.length < 2){
+            alert("Please enter at least two file sizes.");
+            return;
+        }
+        
+    
+        // Convert file sizes into nodes with initial properties
+        let nodes = fileSizes.map((size, index) => ({
+            size,// The size of the file
+            label: `File ${index + 1}`,// Label (e.g., File 1)
+            id: index + 1,  // Unique ID for the file
+            isLeaf: true,// Indicates it's an original file
+            depth: 0,// Initial depth is 0
+            files: [`File ${index + 1}`]//Tracks Files represented in this node
+        }));
+
+        const mergedNodes = [];// To store all merged nodes
+
+        // Simulate the merging process until one node (root) remains
+        while (nodes.length > 1) {
+             // Sort nodes by size in ascending order
+            nodes.sort((a, b) => a.size - b.size);
+
+            // Remove  and retrieves the two smallest nodes(first two elements of the sorted array).
+            const left = nodes.shift();
+            const right = nodes.shift();
+
+            // Create a new merged node
+            const merged = {
+                size: left.size + right.size,// Sum of the two sizes
+                label: `Merged`,// Generic label for merged nodes
+                id: `M${left.id}${right.id}`,// Unique ID for the merged node
+                isLeaf: false, // Indicates it's not a leaf node
+                left, // Left child node
+                right,// Right child node
+                depth: Math.max(left.depth, right.depth) + 1,// Calculate depth
+                files: [...left.files, ...right.files] // Combine file labels
+            };
+
+
+            // Add the merged node to the list of merged nodes
+            mergedNodes.push(merged);
+
+            // Push the new node back into the list of nodes
+            nodes.push(merged);
+        }
+
+        // Convert the final merged node into a D3 hierarchy for visualization
+        rootNode = d3.hierarchy(mergedNodes[mergedNodes.length - 1], d => [d.left, d.right].filter(Boolean));
+        
+        // Pass the hierarchy to the visualization function
+        visualizeTree(rootNode);
+    }
+
+    function visualizeTree(root) {
+        // Dynamically calculate the size based on the tree's height and width
+        const margin = { top: 20, right: 120, bottom: 20, left: 120 };
+        const width = window.innerWidth * 0.8 - margin.left - margin.right;  // Dynamically adjust width
+        const height = window.innerHeight * 0.8 - margin.top - margin.bottom;  // Dynamically adjust height
+
+        // Initialize the tree layout with the calculated size
+        const treeLayout = d3.tree().size([width, height]);
+        treeLayout(root);// Compute the tree layout for the given root node
+
+
+        // Create an SVG container
+        const svg = d3.select("#visualization")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);  // Adjusting the position for centering
+
+       // Draw the links (edges) between parent and child nodes  using a vertical path generator.
+        const links = svg.selectAll(".link")
+            .data(root.links())// Extract links from the tree
+            .enter()
+            .append("path")
+            .attr("class", "link")
+            .attr("d", d3.linkVertical()// Use a vertical link generator
+            //Sets the path coordinates (x and y) based on the tree layout.
+                .x(d => d.x) // Horizontal position
+                .y(d => d.y));// Vertical position
+
+        
+        // Draw the nodes (circles) at each position
+        const nodes = svg.selectAll(".node")
+            .data(root.descendants())// Extract all nodes
+            .enter()
+            .append("g")
+            .attr("class", "node")
+            .attr("transform", d => `translate(${d.x},${d.y})`); // Position each node
+
+        // Add circles to represent nodes
+        nodes.append("circle")
+            .attr("r", 15)// Circle radius
+            .attr("class", d => d.data.isLeaf ? "leaf-node" : "internal-node")
+            .style("fill", d => d.data.isLeaf ? "#4CAF50" : "#FF9800") // Set node colors
+            .on("mouseover", function(event, d) {// Tooltip on hover
+                tooltip.transition().duration(200).style("opacity", .9);
+
+                let label = d.data.isLeaf ? `Original input file` : `Merged file`;
+                let size = `Size: ${d.data.size}`;
+                tooltip.html(`${label}<br>${size}`)
+                    .style("left", `${event.pageX + 5}px`)
+                    .style("top", `${event.pageY - 28}px`);
+            })
+            .on("mouseout", function() {
+                tooltip.transition().duration(200).style("opacity", 0);// Hide tooltip
+            });
+        
+        // <text> element is added to display the size of the file beside the circle
+        nodes.append("text")
+            .attr("x", d => d.data.isLeaf ? -25 : 25)// Position text
+            .attr("y", 5)
+            .text(d => d.data.size)// Display file size
+            .style("font-size", "12px")
+            .style("fill", "black");
+    }
+
+    function toggleWEPLMethod(method) {
+        const weplResultDiv = document.getElementById("wepl-result");
+        const descriptionDiv = document.getElementById("wepl-description");
+
+        if (descriptionDiv.style.display === "block" && descriptionDiv.innerHTML.includes(method === 1 ? "Depth-Based WEPL" : "Iterative Merge Cost WEPL")) {
+            descriptionDiv.style.display = "none";
+            return;
+        }
+    
+        if (method === 1) {
+            descriptionDiv.innerHTML = `
+                <h3>Depth-Based WEPL</h3>
+                <p>Calculate WEPL by multiplying file size and depth for each leaf node.</p>
+                <button onclick="closeWEPLDescription()">Close</button>
+            ` ;
+            const wepl1 = calculateDepthBasedWEPL(rootNode);//Calls the function to compute the WEPL 
+            weplResultDiv.innerHTML = `WEPL (Depth-Based Method): ${wepl1}`;//Displays the calculated WEPL value.
+        } else {
+            descriptionDiv.innerHTML = `
+                <h3>Iterative Merge Cost WEPL</h3>
+                <p>Calculate WEPL by summing the sizes of merged nodes.</p>
+                <button onclick="closeWEPLDescription()">Close</button>
+            ` ;
+            const wepl2 = calculateMergeCostWEPL(rootNode);//Calls the function to compute the WEPL 
+            weplResultDiv.innerHTML = `WEPL (Iterative Merge Cost Method): ${wepl2}`;//Displays the calculated WEPL value.
+        }
+
+        descriptionDiv.style.display = "block";//Ensures the description for the selected method is visible
+    }
+      
+
+    function closeWEPLDescription() {
+       // Hides the description of the WEPL method
+        document.getElementById("wepl-description").style.display = "none";
+    }
+
+    function calculateDepthBasedWEPL(root) {
+        let wepl = 0;
+        //root.descendants(): Iterates over all nodes in the tree
+        root.descendants().forEach(d => {
+            if (d.data.isLeaf) {
+                wepl += d.data.size * d.depth;
+            }
+        });
+        return wepl;
+    }
+
+    function calculateMergeCostWEPL(root) {
+        let wepl = 0;
+        root.descendants().forEach(d => {
+            if (!d.data.isLeaf) {
+                wepl += d.data.size;
+            }
+        });
+        return wepl;
+    }
+    
+</script>
+
+<!-- Footer Section -->
+<footer>
+    <h3>&copy; 2024 Optimal Merge Pattern. All Rights Reserved.</h3>
+    <div class="social-icons">
+        <a href="https://www.facebook.com"><i class="fab fa-facebook"></i></a>
+        <a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+    </div>
+</footer>
+
+</body>
+</html>
