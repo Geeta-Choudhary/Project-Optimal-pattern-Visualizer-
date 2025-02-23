@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theory - Optimal Merge Pattern</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+            body, h1, h2, h3, p {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        /* Add your existing styles here */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2); /* Consistent with homepage colors */
+            color: white;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+
+        .navbar a:hover {
+            color: #ff4757;
+        }
+
+        .navbar .logo {
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        /* Theory Section Styling */
+        #theory {
+            background-color: #fff;
+            padding: 80px 40px;
+            text-align: left;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        #theory h2 {
+            font-size: 2.2em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #theory h3 {
+            font-size: 1.8em;
+            color: #333;
+            margin-top: 30px;
+        }
+
+        #theory p {
+            font-size: 1.1em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .example {
+            background-color: #f0f4f8;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .example h4 {
+            color: #333;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        footer h3 {
+            margin: 0;
+        }
+
+        footer .social-icons a {
+            color: white;
+            font-size: 1.5em;
+            margin: 0 10px;
+            transition: color 0.3s;
+        }
+
+        footer .social-icons a:hover {
+            color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar Section -->
+    <div class="navbar">
+        <div class="logo">Optimal Merge</div>
+        <div>
+            <a href="index.html">Home</a>
+            <a href="theory.html">Theory</a>
+            <a href="visualization.html">Visualization</a>
+            <a href="code.html">Code</a>
+        </div>
+    </div>
+
+    <!-- Theory Content Section -->
+    <section id="theory">
+        <h2>Optimal Merge Pattern Algorithm</h2>
+        <p>The Optimal Merge Pattern (OMP) is a greedy algorithm used to merge a sequence of files in such a way that the total merging cost is minimized. It is primarily used in scenarios like Huffman coding, file merging, and data compression.</p>
+
+        <h3>How the Algorithm Works</h3>
+        <p>The algorithm is based on the idea of merging the two smallest elements at each step. This is done repeatedly until only one file remains. The key observation is that merging smaller files first minimizes the total cost incurred during the merging process.</p>
+        
+        <p>Here’s a step-by-step process:</p>
+        <ul>
+            <li>Start with a list of files or data blocks with given sizes.</li>
+            <li>Sort the list in ascending order based on the size of the files.</li>
+            <li>Repeatedly select the two smallest files and merge them. The cost of merging is the sum of their sizes.</li>
+            <li>The merged file is then added back to the list, and the process is repeated until only one file remains.</li>
+        </ul>
+
+        <h3>Examples of the Optimal Merge Pattern</h3>
+
+        <div class="example">
+            <h4>Example 1: Basic Example</h4>
+            <p>Consider the following file sizes: [4, 2, 7, 3]. The steps are:</p>
+            <ul>
+                <li>Sort files: [2, 3, 4, 7]</li>
+                <li>Merge 2 and 3 → Cost: 5, New files: [5, 4, 7]</li>
+                <li>Merge 4 and 5 → Cost: 9, New files: [9, 7]</li>
+                <li>Merge 7 and 9 → Final cost: 16</li>
+            </ul>
+            <p><strong>Total cost = 5 + 9 + 16 = 30</strong></p>
+        </div>
+
+        <div class="example">
+            <h4>Example 2: Larger Case</h4>
+            <p>Suppose we have files with sizes: [6, 2, 8, 1, 4]. The steps are:</p>
+            <ul>
+                <li>Sort files: [1, 2, 4, 6, 8]</li>
+                <li>Merge 1 and 2 → Cost: 3, New files: [3, 4, 6, 8]</li>
+                <li>Merge 3 and 4 → Cost: 7, New files: [7, 6, 8]</li>
+                <li>Merge 6 and 7 → Cost: 13, New files: [13, 8]</li>
+                <li>Merge 8 and 13 → Final cost: 21</li>
+            </ul>
+            <p><strong>Total cost = 3 + 7 + 13 + 21 = 44</strong></p>
+        </div>
+
+        <div class="example">
+            <h4>Example 3: Larger File Set</h4>
+            <p>Consider the following file sizes: [12, 5, 7, 10, 4, 8]. The steps are:</p>
+            <ul>
+                <li>Sort files: [4, 5, 7, 8, 10, 12]</li>
+                <li>Merge 4 and 5 → Cost: 9, New files: [9, 7, 8, 10, 12]</li>
+                <li>Merge 7 and 8 → Cost: 15, New files: [9, 15, 10, 12]</li>
+                <li>Merge 9 and 10 → Cost: 19, New files: [15, 19, 12]</li>
+                <li>Merge 12 and 15 → Cost: 27, New files: [19, 27]</li>
+                <li>Merge 19 and 27 → Final cost: 46</li>
+            </ul>
+            <p><strong>Total cost = 9 + 15 + 19 + 27 + 46 = 116</strong></p>
+        </div>
+
+        <div class="example">
+            <h4>Example 4: Different Distribution</h4>
+            <p>For the file sizes [3, 9, 5, 1, 6], the process is:</p>
+            <ul>
+                <li>Sort files: [1, 3, 5, 6, 9]</li>
+                <li>Merge 1 and 3 → Cost: 4, New files: [4, 5, 6, 9]</li>
+                <li>Merge 4 and 5 → Cost: 9, New files: [9, 6, 9]</li>
+                <li>Merge 6 and 9 → Cost: 15, New files: [9, 15]</li>
+                <li>Merge 9 and 15 → Final cost: 24</li>
+            </ul>
+            <p><strong>Total cost = 4 + 9 + 15 + 24 = 52</strong></p>
+        </div>
+
+        <h3>Applications of the Optimal Merge Pattern</h3>
+        <p>The Optimal Merge Pattern is widely used in several fields:</p>
+        <ul>
+            <li><strong>Huffman Coding:</strong> It is a critical part of Huffman coding, used in data compression algorithms such as ZIP files and JPEG images.</li>
+            <li><strong>File Merging:</strong> In situations like data storage and file system optimization, the OMP helps in minimizing the merging cost of large datasets.</li>
+            <li><strong>Memory Management:</strong> Efficient memory allocation in resource-constrained systems, ensuring minimal access cost.</li>
+            <li><strong>Distributed Computing:</strong> OMP can also be applied in parallel computing to merge intermediate results from multiple processes.</li>
+        </ul>
+
+        <h3>Time Complexity</h3>
+        <p>The time complexity of the Optimal Merge Pattern algorithm is <strong>O(n log n)</strong>, where <strong>n</strong> is the number of files. This is because, in each step, two smallest files are merged, and the sorting operation at each step ensures that the smallest files are easily identified. Sorting the list takes O(n log n) time, and the merging process requires constant time, hence the overall complexity is dominated by the sorting operation.</p>
+
+        <h3>Space Complexity</h3>
+        <p>The space complexity of OMP is <strong>O(n)</strong) since we need to store the list of files and their merged counterparts at each step. This is typically done using a heap data structure (min-heap), which requires extra space proportional to the number of elements being managed.</p>
+
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <h3>&copy; 2024 Optimal Merge Pattern. All Rights Reserved.</h3>
+        <div class="social-icons">
+            <a href="https://www.facebook.com"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.twitter.com"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.linkedin.com"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </footer>
+</body>
+</html>
